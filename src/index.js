@@ -1,4 +1,7 @@
-import { Client, IntentsBitField} from 'discord.js'; 
+import { Client, EmbedBuilder, IntentsBitField} from 'discord.js'; 
+import dotenv from 'dotenv';
+import getLatestDeals from './ozbscraper.js'
+dotenv.config(); 
 
 const client = new Client({
     intents: [
@@ -10,8 +13,38 @@ const client = new Client({
 }); 
 
 client.on('ready', (c) => {
-    console.log(`${c.user.tag} is ready!`);
+    console.log(`${c.user.tag} is ready!`); 
 }); 
 
-client.login("");
+client.on('interactionCreate', async (interaction) => {
+
+    if (!interaction.isChatInputCommand()) return; 
+
+    if (interaction.commandName == 'start') {
+        
+        await interaction.reply({ content: 'Starting deal monitoring...', ephemeral: true });
+
+        const channelId = interaction.channelId; 
+        const channel = client.channels.cache.get(channelId);
+
+        setInterval(async () => {
+            const deals = await getLatestDeals();
+            console.log(deals)
+            if (deals.length > 0) {
+                for (const deal of deals) {
+                    
+                    const messageContent = `**${deal.postTitle}** \n${deal.upvotes} upvotes in ${deal.diffMinutes} minutes \n${deal.postLink}`;
+                    channel.send(messageContent);
+                }
+            }
+        }, 5 * 60 * 1000); 
+
+        
+
+        
+    } 
+    
+}) 
+
+client.login(process.env.TOKEN);
 
