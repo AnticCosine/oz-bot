@@ -1,4 +1,4 @@
-const { Client, IntentsBitField} = require('discord.js'); 
+import { Client, IntentsBitField} from 'discord.js'; 
 
 const client = new Client({
     intents: [
@@ -13,5 +13,5 @@ client.on('ready', (c) => {
     console.log(`${c.user.tag} is ready!`);
 }); 
 
-client.login(""); 
+client.login("");
 
