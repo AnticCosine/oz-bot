@@ -3,11 +3,12 @@ import fetch from "node-fetch";
 
 
 // might need to play around with these values but is essentially 20 upvotes for a post in 60 minutes is classified as trending 
-const upvoteThreshold = 2
-const timeThreshold = 180
+const upvoteThreshold = 20
+const timeThreshold = 60
 
 const processedDeals = new Set(); // stores the ozbargain ID for deals which have already been sent on discord (to avoid duplication) 
 
+// export default async function getLatestDeals(){
 export default async function getLatestDeals(){
 
     try {
@@ -28,6 +29,7 @@ export default async function getLatestDeals(){
             const postTitle = $(element).find('.n-right .title a').text().trim()
             const postId = $(element).attr('id');
             const postLink = `https://www.ozbargain.com.au${$(element).find('h2.title > a').attr('href')}`;
+            const postImg = $(element).find('.n-right .right').find('img').attr('src'); 
 
 
             if (time) {
@@ -53,7 +55,8 @@ export default async function getLatestDeals(){
                         upvotes: parseInt(upvotes || '0'),
                         postLink,
                         dayTime, 
-                        diffMinutes
+                        diffMinutes,
+                        postImg
                     });
     
                 }
@@ -78,4 +81,3 @@ export default async function getLatestDeals(){
         return []; 
     }
 } 
-
