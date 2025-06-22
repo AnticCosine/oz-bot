@@ -24,7 +24,7 @@ export default async function getLatestDeals(){
 
         $('#is0 > .node').map((index, element) => {
 
-            const upvotes = $(element).find('.n-left .nvb.voteup span').text().trim();; 
+            const upvotes = $(element).find('.n-left .nvb.voteup span').text().trim();
             const time = $(element).find('.submitted').text().match(/(\d{2}\/\d{2}\/\d{4}) - (\d{2}:\d{2})/);
             const postTitle = $(element).find('.n-right .title a').text().trim()
             const postId = $(element).attr('id');

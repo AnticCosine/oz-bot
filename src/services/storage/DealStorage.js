@@ -1,13 +1,16 @@
 export class DealStorage {
     constructor() {
-        this.deals = new Set();
+        this.channelDeals = {};
     }
 
-    addDeal(dealId) {
-        this.deals.add(dealId);
+    addDeal(channelId, dealId) {
+        if (!this.channelDeals[channelId]) {
+            this.channelDeals[channelId] = new Set();
+        }
+        this.channelDeals[channelId].add(dealId);
     }
 
-    hasDeal(dealId) {
-        return this.deals.has(dealId);
+    hasDeal(channelId, dealId) {
+        return this.channelDeals[channelId]?.has(dealId) || false;
     }
 }
