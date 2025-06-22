@@ -1,7 +1,6 @@
 import { Client, EmbedBuilder, IntentsBitField} from 'discord.js'; 
 import dotenv from 'dotenv';
 import getLatestDeals from './ozbscraper.js'
-import { createCanvas, loadImage } from 'canvas';
 dotenv.config(); 
 
 const client = new Client({
@@ -48,11 +47,7 @@ client.on('interactionCreate', async (interaction) => {
                     channel.send({ embeds: [embed] }); 
                 }
             }
-        }, 10 * 1000); 
-
-        
-
-        
+        },10 * 60 * 1000); 
     } 
     
 }) 
