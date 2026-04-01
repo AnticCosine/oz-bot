@@ -21,16 +21,16 @@ export class DealScraperService {
             if (!allDeals.length) return;
 
             for (const [channelId, config] of Object.entries(this.configService.getAllConfigs())) {
-                console.log(channelId, config)
+                //console.log(channelId, config)
                 const channel = this.client.channels.cache.get(channelId);
                 if (!channel) continue;
 
                 const filtered = this.filterDeals(allDeals, channelId, config);
-                console.log("filtered deals: " ,filtered)
+                //console.log("filtered deals: " ,filtered)
                 if (filtered.length) await sendDeals(filtered, channel, config);
             }
 
-        }, 60 * 1000);
+        }, 60 * 1000 * 45); // scrapes every 45 minutes 
     }
 
     async scrapeAllDeals() {
@@ -85,6 +85,8 @@ export class DealScraperService {
     extractDealInfo($, element) {
         return {
             postId: $(element).attr('id'),
+            author: $(element).find('.n-right .submitted strong a').text().trim(),
+            description: $(element).find('.n-right .content p').text().trim(),
             postTitle: $(element).find('.n-right .title a').text().trim(),
             upvotes: parseInt($(element).find('.n-left .nvb.voteup span').text().trim() || '0'),
             postLink: `https://www.ozbargain.com.au${$(element).find('h2.title > a').attr('href')}`,
