@@ -30,7 +30,7 @@ export class DealScraperService {
                 if (filtered.length) await sendDeals(filtered, channel, config);
             }
 
-        }, 60 * 1000 * 45); // scrapes every 45 minutes 
+        }, 60 * 1000 * 30); // scrapes every 30 minutes 
     }
 
     async scrapeAllDeals() {
