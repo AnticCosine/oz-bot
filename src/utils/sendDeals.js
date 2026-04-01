@@ -1,8 +1,12 @@
 import { EmbedBuilder } from 'discord.js';
 
-export async function sendDeals(deals, channel) {
+export async function sendDeals(deals, channel, config) {
+    const rolePings = (config?.pingRoles || [])
+        .map(id => `<@&${id}>`)
+        .join(' ');
+    
     for (const deal of deals) {
-        const messageContent = `🔥 **${deal.postTitle}** \n🟢 ${deal.upvotes} Upvotes in ${deal.diffMinutes} Minutes \n**Link: **<${deal.postLink}>`;
+        const messageContent = `${rolePings ? rolePings + ' ' : ''} \n 🔥 **${deal.postTitle}** \n🟢 ${deal.upvotes} Upvotes in ${deal.diffMinutes} Minutes \n**Link: **<${deal.postLink}>`;
         await channel.send(messageContent);
 
         const embed = new EmbedBuilder()

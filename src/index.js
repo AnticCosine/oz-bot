@@ -1,14 +1,9 @@
 import { Client, IntentsBitField} from 'discord.js'; 
 import dotenv from 'dotenv';
 import { DealScraperService } from './services/DealScraperService.js';
-import { sendDeals } from './utils/sendDeals.js';
 import { ConfigService } from './services/ConfigService.js';
 import { DealStorage } from './services/storage/DealStorage.js';
 dotenv.config();
-
-const configService = new ConfigService();
-const dealStorage = new DealStorage();
-const dealScraperService = new DealScraperService(configService, dealStorage);
 
 const client = new Client({
     intents: [
@@ -19,8 +14,13 @@ const client = new Client({
     ]
 }); 
 
+const configService = new ConfigService();
+const dealStorage = new DealStorage();
+const dealScraperService = new DealScraperService(configService, dealStorage, client);
+
 client.on('ready', (c) => {
     console.log(`${c.user.tag} is ready!`); 
+    dealScraperService.start();
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -30,71 +30,58 @@ client.on('interactionCreate', async (interaction) => {
         case 'start':
             await handleStart(interaction);
             break;
-        case 'config':
-            await handleConfig(interaction);
-            break;
-        case 'filter':
-            await handleFilter(interaction);
+        case 'stop':
+            await handleStop(interaction);
             break;
     }
 });
 
 async function handleStart(interaction) {
     const channelId = interaction.channelId;
-    await interaction.reply({ content: 'Starting deal monitoring...', ephemeral: true });
-    const channel = client.channels.cache.get(channelId);
 
-    const upvotes = interaction.options.getInteger('upvotes') || 20;
+
+    const upvotes = interaction.options.getInteger('upvotes') || 5;
     const time = interaction.options.getInteger('time') || 60;
-    const category = interaction.options.getString('category') || null;
-    const tag = interaction.options.getString('tag') || null;
+    const category = interaction.options.getString('category')?.split(',').map(c => c.trim()) || [];
+    const keywords = interaction.options.getString('keywords')?.split(',').map(k => k.trim()) || [];
+    const pingRole = interaction.options.getRole('role') || null;
 
     configService.updateConfig(channelId, {
         upvoteThreshold: upvotes,
         timeThreshold: time,
-        categories: category ? [category] : [],
-        tags: tag ? [tag] : []
-    });
-
-    console.log(`Starting bot with configuration as ${configService.getConfig(channelId)}`);
-    
-    setInterval(async () => {
-        const config = configService.getConfig(channelId)
-        const deals = await dealScraperService.scrapeDeals(channelId, config.categories[0], config.tags[0]);
-        console.log(deals);
-        await sendDeals(deals, channel);
-    }, 30 * 1000);
-}
-
-async function handleConfig(interaction) {
-    const channelId = interaction.channelId;
-    const upvotes = interaction.options.getInteger('upvotes');
-    const time = interaction.options.getInteger('time');
-    
-    configService.updateConfig(channelId, {
-        upvoteThreshold: upvotes,
-        timeThreshold: time
-    });
-    
-    await interaction.reply({ 
-        content: `Updated configuration: ${upvotes} upvotes in ${time} minutes`,
-        ephemeral: true 
-    });
-}
-
-async function handleFilter(interaction) {
-    const channelId = interaction.channelId;
-    const category = interaction.options.getString('category');
-    const tag = interaction.options.getString('tag');
-
-    configService.updateConfig(channelId, {
-        categories: category ? [category] : [],
-        tags: tag ? [tag] : []
+        categories: category,
+        filterKeywords: keywords,
+        pingRoles: pingRole ? [pingRole.id] : []
     });
 
     await interaction.reply({
-        content: `Updated filters: ${category ? `Category: ${category}` : ''} ${tag ? `Tag: ${tag}` : ''}`,
-        ephemeral: true
+        embeds: [
+            {
+                title: "Oz Bot scraper started with following params",
+                color: 0x00FF00,
+                fields: [
+                    { name: "Trending ", value: `${upvotes} upvotes in ${time} minutes`, inline: true },
+                    { name: "Category", value: category.length ? category.join(', ') : "None", inline: true },
+                    { name: "Keywords", value: keywords.length ? keywords.join(', ') : "None", inline: true }
+                ]
+            }
+        ]
+    });
+    
+}
+
+async function handleStop(interaction) {
+    const channelId = interaction.channelId;
+    
+    configService.deleteConfig(channelId);
+   
+    await interaction.reply({
+        embeds: [
+            {
+                title: "Oz Bot scraper stopped in this channel",
+                color: 0xFF0000
+            }
+        ]
     });
 }
 

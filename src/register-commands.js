@@ -21,53 +21,27 @@ const commands = [
             },
             {
                 name: 'category',
-                description: 'Category to filter (e.g., dining-takeaway)',
+                description: 'Category to filter (e.g., Mobile, Dining & Takeaway)',
                 type: 3,
                 required: false
             },
             {
-                name: 'tag',
-                description: 'Tag to filter (e.g., tablet)',
+                name: 'keywords',
+                description: 'Keywords to filter (e.g., Nintendo, Switch, Samsung)',
                 type: 3,
+                required: false
+            },
+            {
+                name: 'role',
+                description: 'The role you want to ping to alert users',
+                type: 8,
                 required: false
             }
         ]
     },
     {
-        name: 'config',
-        description: 'Update deal monitoring configuration',
-        options: [
-            {
-                name: 'upvotes',
-                description: 'Minimum upvotes required',
-                type: 4,
-                required: true
-            },
-            {
-                name: 'time',
-                description: 'Time threshold in minutes',
-                type: 4,
-                required: true
-            }
-        ]
-    },
-    {
-        name: 'filter',
-        description: 'Filter deals by category or tag',
-        options: [
-            {
-                name: 'category',
-                description: 'Category to filter (e.g., dining-takeaway)',
-                type: 3,
-                required: false
-            },
-            {
-                name: 'tag',
-                description: 'Tag to filter (e.g., tablet)',
-                type: 3,
-                required: false
-            }
-        ]
+        name: 'stop',
+        description: 'Stop current deal scraper in this channel' 
     }
 ];
 
