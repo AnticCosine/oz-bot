@@ -40,7 +40,7 @@ async function handleStart(interaction) {
     const channelId = interaction.channelId;
 
 
-    const upvotes = interaction.options.getInteger('upvotes') || 5;
+    const upvotes = interaction.options.getInteger('upvotes') || 20;
     const time = interaction.options.getInteger('time') || 60;
     const category = interaction.options.getString('category')?.split(',').map(c => c.trim()) || [];
     const keywords = interaction.options.getString('keywords')?.split(',').map(k => k.trim()) || [];
