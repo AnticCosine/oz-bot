@@ -20,8 +20,8 @@ You can optionally add filters:
 
 | Option | Description |
 |------|------|
-| `upvotes` | Min upvotes required |
-| `time` | Time since post |
+| `upvotes` | Min upvotes required (default 20 upvotes) |
+| `time` | Time since post (default 60 minutes) | 
 | `category` | Filter deals by category |
 | `keywords` | Filter deals containing specific keywords in title |
 | `role` | Role to notify users when deal is posted | 
@@ -33,6 +33,10 @@ You can optionally add filters:
 Sends deals in the computing category with GPU in the title if the post has 20 upvotes in the first 60 minutes of post (and will ping users with @PC role)
 
 ### `/stop`
+
+```
+/stop
+```
 
 Will stop scraping deals in that specific channel 
 
