@@ -9,7 +9,8 @@ export class ConfigService {
                 upvoteThreshold: 20,
                 timeThreshold: 60,
                 categories: [],
-                tags: []
+                filterKeywords: [],
+                pingRoles: []
             };
         }
         this.channelConfigs[channelId] = { ...this.channelConfigs[channelId], ...config };
@@ -20,7 +21,16 @@ export class ConfigService {
             upvoteThreshold: 20,
             timeThreshold: 60,
             categories: [],
-            tags: []
+            filterKeywords: [],
+            pingRoles: []
         };
+    }
+
+    getAllConfigs() {
+        return this.channelConfigs;
+    }
+
+    deleteConfig(channelId) {
+        delete this.channelConfigs[channelId];
     }
 }

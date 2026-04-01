@@ -7,7 +7,13 @@ export class DealStorage {
         if (!this.channelDeals[channelId]) {
             this.channelDeals[channelId] = new Set();
         }
-        this.channelDeals[channelId].add(dealId);
+        const set = this.channelDeals[channelId];
+        set.add(dealId);
+
+        if (set.size > 200) {
+            const [first] = set;
+            set.delete(first);
+        }
     }
 
     hasDeal(channelId, dealId) {
