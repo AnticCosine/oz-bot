@@ -25,13 +25,14 @@ export default async function getLatestDeals(){
         $('#is0 > .node').map((index, element) => {
 
             const upvotes = $(element).find('.n-left .nvb.voteup span').text().trim();
-            const time = $(element).find('.submitted').text().match(/(\d{2}\/\d{2}\/\d{4}) - (\d{2}:\d{2})/);
+            const time = $(element).find('.submitted').text();
             const postTitle = $(element).find('.n-right .title a').text().trim()
             const postId = $(element).attr('id');
             const postLink = `https://www.ozbargain.com.au${$(element).find('h2.title > a').attr('href')}`;
             const postImg = $(element).find('.n-right .right').find('img').attr('src'); 
 
-            console.log($(element).find('.n-right .links .tag').text().trim())
+            //console.log($(element).find('.n-right .links .tag').text().trim())
+            console.log(time)
 
             if (time) {
                 const dayTime = `${time[1]} ${time[2]}`

@@ -42,6 +42,18 @@ const commands = [
     {
         name: 'stop',
         description: 'Stop current deal scraper in this channel' 
+    },
+    {
+        name: 'config',
+        description: 'Update scraper frequency',
+        options: [
+            {
+                name: 'interval',
+                description: 'How often to scrape for deals (in minutes)',
+                type: 4,
+                required: false
+            }
+        ]
     }
 ];
 

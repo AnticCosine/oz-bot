@@ -5,6 +5,8 @@ import { ConfigService } from './services/ConfigService.js';
 import { DealStorage } from './services/storage/DealStorage.js';
 dotenv.config();
 
+const ScraperFrequency = 60 // minutes 
+
 const client = new Client({
     intents: [
         IntentsBitField.Flags.Guilds,
@@ -16,7 +18,7 @@ const client = new Client({
 
 const configService = new ConfigService();
 const dealStorage = new DealStorage();
-const dealScraperService = new DealScraperService(configService, dealStorage, client);
+const dealScraperService = new DealScraperService(configService, dealStorage, client, ScraperFrequency);
 
 client.on('ready', (c) => {
     console.log(`${c.user.tag} is ready!`); 
@@ -32,6 +34,9 @@ client.on('interactionCreate', async (interaction) => {
             break;
         case 'stop':
             await handleStop(interaction);
+            break;
+        case 'config':
+            await handleConfig(interaction);
             break;
     }
 });
@@ -82,6 +87,31 @@ async function handleStop(interaction) {
                 color: 0xFF0000
             }
         ]
+    });
+}
+
+
+async function handleConfig(interaction) {
+    const interval = interaction.options.getInteger('interval');
+
+    if (!interval) {
+        return await interaction.reply({ content: 'Please provide at least one setting to update.', ephemeral: true });
+    }
+
+    if (interval < 1) {
+        return await interaction.reply({ content: 'Interval must be at least 1 minute.', ephemeral: true });
+    }
+
+    dealScraperService.updateInterval(interval);
+
+    await interaction.reply({
+        embeds: [{
+            title: "Scraper config updated",
+            color: 0x0099FF,
+            fields: [
+                { name: "Scrape Interval", value: `Every ${interval} minutes`, inline: true }
+            ]
+        }]
     });
 }
 

@@ -1,20 +1,23 @@
 import * as cheerio from "cheerio";
 import fetch from "node-fetch"; 
 import { sendDeals } from '../utils/sendDeals.js';
+import { DateTime } from "luxon";
 
 export class DealScraperService {
-    constructor(configService, storage, client) {
+    constructor(configService, storage, client, ScraperFrequency) {
         this.configService = configService;
         this.storage = storage;
         this.client = client;
+        this.ScraperFrequency = ScraperFrequency;
         this.started = false;
+        this.intervalId = '';
     }
 
     start() {
         if (this.started) return;
         this.started = true;
 
-        setInterval(async () => {
+        this.intervalId = setInterval(async () => {
 
             const allDeals = await this.scrapeAllDeals();
             
@@ -30,7 +33,15 @@ export class DealScraperService {
                 if (filtered.length) await sendDeals(filtered, channel, config);
             }
 
-        }, 60 * 1000 * 30); // scrapes every 30 minutes 
+        }, 60 * 1000 * this.ScraperFrequency); // defaults every 30 minutes 
+    }
+
+    updateInterval(minutes) {
+        this.ScraperFrequency = minutes;
+
+        if (this.intervalId) clearInterval(this.intervalId);
+        this.started = false;
+        this.start();
     }
 
     async scrapeAllDeals() {
@@ -51,14 +62,22 @@ export class DealScraperService {
             const deal = this.extractDealInfo($, el);
             const match = deal.time;
             if (!match) return;
-
+            
             const [, date, time] = match;
             const [d, m, y] = date.split('/');
             const [h, min] = time.split(':');
-            const postDate = new Date(y, m - 1, d, h, min);
-            const diffMinutes = Math.floor((Date.now() - postDate) / 60000);
+            
+            const postDate = DateTime.fromObject(
+                { year: y, month: m, day: d, hour: h, minute: min },
+                { zone: "Australia/Sydney" }
+            );
+
+            const diffMinutes = Math.floor(
+              DateTime.now().setZone("Australia/Sydney").diff(postDate, "minutes").minutes
+            );
 
             deals.push({ ...deal, diffMinutes });
+            
         });
         return deals;
     }
